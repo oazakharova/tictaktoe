@@ -2,6 +2,13 @@
 
 let ticTakToe = {
     gameTableElement: document.getElementById('game'),
+    status: 'playing',
+    mapValues: [
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', ''],
+    ],
+    phase: 'X',
 
     /**
      * инициализация игры
@@ -10,7 +17,7 @@ let ticTakToe = {
         // вывод всех ячеек
         this.renderMap();
         // инициализация обработчиков событий
-        // this.initEventHandlers();
+        this.initEventHandlers();
     },
 
     // отрисовка игрового поля 3х3
@@ -25,8 +32,65 @@ let ticTakToe = {
                 tr.appendChild(td);
             }
         }
+    },
+
+    /**
+     * инициализация обработчиков событий
+     */
+    initEventHandlers() {
+        this.gameTableElement.addEventListener('click', event => this.cellClickHandler(event));
+    },
+
+    /**
+     * обработчик события клика
+     * @param {MouseEvent} event 
+     */
+    cellClickHandler(event) {
+        if (!this.isCorrectClick(event)) {
+            return;
+        }
+    },
+
+    /**
+     * проверка, был ли корректный клик в событии
+     * @param {Event} event 
+     * @returns {boolean}
+     */
+    isCorrectClick(event) {
+        return this.isStatusPlaying() && this.isClickByCell(event) && this.isCellEmpty(event);
+    },
+
+    /**
+     * проверка, что игра не закончена
+     * @returns {boolean}
+     */
+    isStatusPlaying() {
+        return this.status === 'playing';
+    },
+
+    /**
+     * проверка, что клик был совершен по ячейке
+     * @param {Event} event 
+     * @returns {boolean}
+     */
+    isClickByCell(event) {
+        return event.target.tagName === 'TD'
+    },
+
+    /**
+     * проверка возможности заполнения ячейи
+     * @param {Event} event 
+     * @returns {boolean}
+     */
+    isCellEmpty(event) {
+        //получение строки и колонки клика
+        let row = +event.target.dataset.row;
+        let col = +event.target.dataset.col;
+
+        return this.mapValues[row][col] === '';
     }
+
 }
 
 // запуск игры после полной загрузки страницы
-window.addEventListener('load', ticTakToe.init);
+window.addEventListener('load', ticTakToe.init());
